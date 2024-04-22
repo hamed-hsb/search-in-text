@@ -17,7 +17,9 @@ A bash script designed to search for specific parameters in log files within a g
 <param2>: Second parameter for exclusion when -v option is used.
 
 ## Example:
+```
 ./sint.sh -v /home/kali/Documents/logs app_token gps_adid
+```
 
 ## Behavior:
 The script reads each text file within the specified directory.
