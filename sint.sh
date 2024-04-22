@@ -45,13 +45,13 @@ fi
 
 
 # Iterate over each text file in the directory
-for file in "$1"/*.*; do
+for file in "$1"/*.txt; do
     echo "Reading file: $file"
     # Read each line of the file
     while IFS= read -r line; do
         # Extract the value of the "app_token" field using grep and awk
         if [ "$is_invert_match" -eq 1 ]; then
-        	line_log=$(echo "$line" | grep  "$param1" | grep -v '\bgps_adid\b')
+        	line_log=$(echo "$line" | grep  "$param1" | grep -v "\b$param2\b")
         else
         	line_log=$(echo "$line" | grep  "$param1")
         fi
