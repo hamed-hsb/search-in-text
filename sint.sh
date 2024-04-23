@@ -1,9 +1,15 @@
 #!/bin/bash
 
 LINE_INDEX=0
+
+file_list=""
+
 is_invert_match_option=0
 is_match_option=0
 is_repeat_option=0
+
+is_last_file_option=0
+is_first_file_option=0
 is_all_files_option=1
 
 
@@ -14,12 +20,24 @@ logical_operator="-v"
 arg1=""
 arg2=""
 arg3=""
+arg4=""
+
 
 # Parse command line options
-while getopts ":a:v:m:r:" opt; do
+# Parse directory options
+# -a -> All files in directory
+# -f -> First file in directory
+# -l -> The last file directory
+while getopts ":a:f:l:v:m:r:" opt; do
     case ${opt} in
         a) arg1=$OPTARG 
         is_all_files_option=1
+        ;;
+        f)arg1=$OPTARG
+        is_first_file_option=1
+        ;;
+        l)arg1=$OPTARG
+        is_last_file_option=1
         ;;
         v) arg2=$OPTARG 
         is_invert_match_option=1
@@ -40,7 +58,7 @@ done
 shift $((OPTIND -1))
 
 # Check if all arguments are provided
-if [[ -z $arg1 || -z $arg2 || -z $arg3 ]]; then
+if [[ -z $arg1 || -z $arg2 || -z $arg3 || -z $arg4 || -z $arg5 ]]; then
     echo "Error: All arguments (-v, -m, -r) are required."
 fi
 
@@ -50,7 +68,8 @@ echo "Argument 1: $arg1"
 echo "Argument 2: $arg2"
 echo "Argument 3: $arg3"
 echo "Argument 4: $arg4"
-
+echo "Argument 4: $arg5"
+echo "Argument 4: $arg6"
 
 
 
@@ -61,8 +80,17 @@ if [ ! -d "$arg1" ]; then
 fi
 
 
+if [ "$is_last_file_option" -eq 1  ]; then
+file_list=$(ls  "$arg1"/*.txt)
+fi
+
+if [ "$is_first_file_option" -eq 1 ]; then
+file_list=$(ls -r "$arg1"/*.txt)
+fi
+
+
 # Iterate over each text file in the directory
-for file in "$arg1"/*.txt; do
+for file in "$arg1"/*.*; do
     echo "Reading file: $file"
     # Read each line of the file
     while IFS= read -r line; do
@@ -70,17 +98,29 @@ for file in "$arg1"/*.txt; do
         if [ "$is_invert_match_option" -eq 1 ]; then
         	line_log=$(echo "$line" | grep  "$arg3" | grep -v "\b$arg2\b")
         else
-        	line_log=$(echo "$line" | grep  "$arg1")
+        	line_log=$(echo "$line" | grep  "$arg3")
         fi
         
         # Check if app_token is not empty
 	if [ -n "$line_log" ]; then
-	((LINE_INDEX++))
-	# Output the value of the "app_token" field
-        echo "line $LINE_INDEX : $line_log"
+		((LINE_INDEX++))
+		
+		# Output the value of the "app_token" field
+		echo "line $LINE_INDEX : $line_log"
 	fi
 	
     done < "$file"
+    
+    
+   
+    if [ "$is_first_file_option" -eq 1 ]; then
+     	# Exit the loop after processing the first file or last file
+    	break
+    fi
+    
+    if [ "$is_last_file_option" -eq 1 ]; then
+    	break
+    fi
 done
 
 
