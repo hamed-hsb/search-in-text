@@ -12,6 +12,8 @@ is_last_file_option=0
 is_first_file_option=0
 is_all_files_option=1
 
+is_save_result_log_option=0
+
 
 # Default logical operator
 logical_operator="-v"
@@ -21,6 +23,7 @@ arg1=""
 arg2=""
 arg3=""
 arg4=""
+arg5=""
 
 
 # Parse command line options
@@ -28,9 +31,9 @@ arg4=""
 # -a -> All files in directory
 # -f -> First file in directory
 # -l -> The last file directory
-while getopts ":a:f:l:v:m:r:" opt; do
+while getopts ":a:f:l:v:m:r:s:" opt; do
     case ${opt} in
-        a) arg1=$OPTARG 
+        a)arg1=$OPTARG 
         is_all_files_option=1
         ;;
         f)arg1=$OPTARG
@@ -39,16 +42,18 @@ while getopts ":a:f:l:v:m:r:" opt; do
         l)arg1=$OPTARG
         is_last_file_option=1
         ;;
-        v) arg2=$OPTARG 
+        v)arg2=$OPTARG 
         is_invert_match_option=1
         ;;
-        m) arg3=$OPTARG 
+        m)arg3=$OPTARG 
         is_match_option=1
         ;;
-        r) arg4=$optarg
+        r)arg4=$OPTARG
         is_all_files_option=1
         ;;
-        
+        s)arg5=$OPTARG
+        is_save_result_log_option=1
+        ;;
         \?) echo "Invalid option: $OPTARG" >&2
             usage ;;
         :) echo "Option -$OPTARG requires an argument." >&2
@@ -80,7 +85,7 @@ if [ ! -d "$arg1" ]; then
 fi
 
 
-if [ "$is_last_file_option" -eq 1  ]; then
+if [ "$is_last_file_option" -eq 1 ]; then
 file_list=$(ls  "$arg1"/*.txt)
 fi
 
